@@ -3,24 +3,34 @@ require 'terminal-table'
 require 'rainbow'
 
 class Ticker
-  SYMBOLS = %w(AMD SPY DIS SQ NFLX FTEC MSFT WMT NVDA INTC SNE GOOGL TSLA DJI FB)
-  CURRENT = %w(AAPL AMZN DAL)
+  STOCKS  = %w(AMD DIS SQ PYPL GE BABA NFLX MSFT WMT NVDA INTC SNE GOOGL TSLA DJI FB)
+  INDEXES = %w(DIA SPY IWM)
+  CURRENT = %w(AAPL AMZN DAL BA)
+
+  Terminal::Table::Style.defaults = {:width => 85}
 
   def self.run
     while true
       system("clear")
-      stocks = StockQuote::Stock.quote(SYMBOLS.sort_by(&:downcase))
+      stocks  = StockQuote::Stock.quote(STOCKS.sort_by(&:downcase))
       current = StockQuote::Stock.quote(CURRENT.sort_by(&:downcase))
+      indexes = StockQuote::Stock.quote(INDEXES.sort_by(&:downcase))
 
-      table = Terminal::Table.new(:headings => ['Company', 'Close', 'Open', 'Last Price', '% change']) do |t|
+      table = Terminal::Table.new(:headings => ['SYM', 'Close', 'Open', 'Last Price', '% change']) do |t|
         stocks.each do |stock|
+          t << [stock.symbol, stock.close, stock.open, Rainbow(stock.latest_price).cyan, self.change(stock.change_percent)]
+        end
+
+        t << :separator
+
+        indexes.each do |stock|
           t << [stock.company_name, stock.close, stock.open, Rainbow(stock.latest_price).cyan, self.change(stock.change_percent)]
         end
 
         t << :separator
 
         current.each do |stock|
-          t << [stock.company_name, stock.close, stock.open, Rainbow(stock.latest_price).cyan, self.change(stock.change_percent)]
+          t << [stock.symbol, stock.close, stock.open, Rainbow(stock.latest_price).cyan, self.change(stock.change_percent)]
         end
       end
 
