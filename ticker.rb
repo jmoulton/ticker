@@ -3,13 +3,15 @@ require 'terminal-table'
 require 'rainbow'
 
 class Ticker
-  STOCKS  = %w(AMD DIS SQ PYPL GE BABA NFLX MSFT WMT NVDA INTC SNE GOOGL TSLA DJI FB)
+  STOCKS  = %w(AMD BA SQ PYPL GE BABA NFLX MSFT WMT NVDA INTC SNE GOOGL TSLA DJI FB)
   INDEXES = %w(DIA SPY IWM)
-  CURRENT = %w(AAPL AMZN DAL BA)
+  CURRENT = %w(WORK AMZN DAL GOOGL)
 
-  Terminal::Table::Style.defaults = {:width => 85}
+  Terminal::Table::Style.defaults = {:width => 105}
 
   def self.run
+    StockQuote::Stock.new(api_key: "")
+
     while true
       system("clear")
       stocks  = StockQuote::Stock.quote(STOCKS.sort_by(&:downcase))
